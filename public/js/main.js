@@ -1,4 +1,6 @@
 import CanvasRender from './canvas-render';
+import Pattern from './pattern';
+import Box from './box';
 
 const CAMERA_RADIUS = 100; // radius of camera from center scene
 const FOV = 70;
@@ -47,23 +49,24 @@ function init() {
   const geometry = new THREE.BoxGeometry(20, 20, 20);
 
   for (var i = 0; i < NUM_BOXES; i++) {
-    let object = new THREE.Mesh(geometry, new THREE.MeshLambertMaterial({ color: Math.random() * 0xffffff }) );
+    let box = new Box();
+    // let object = new THREE.Mesh(geometry, new THREE.MeshLambertMaterial({ color: Math.random() * 0xffffff }) );
 
     // assign random position
-    object.position.x = _.random(-BOX_FIELD_RADIUS, BOX_FIELD_RADIUS);
-    object.position.y = _.random(-BOX_FIELD_RADIUS, BOX_FIELD_RADIUS);
-    object.position.z = _.random(-BOX_FIELD_RADIUS, BOX_FIELD_RADIUS);
+    box.position.x = _.random(-BOX_FIELD_RADIUS, BOX_FIELD_RADIUS);
+    box.position.y = _.random(-BOX_FIELD_RADIUS, BOX_FIELD_RADIUS);
+    box.position.z = _.random(-BOX_FIELD_RADIUS, BOX_FIELD_RADIUS);
 
     // assign random rotation
-    object.rotation.x = _.random(TWO_PI);
-    object.rotation.y = _.random(TWO_PI);
-    object.rotation.z = _.random(TWO_PI);
+    box.rotation.x = _.random(TWO_PI);
+    box.rotation.y = _.random(TWO_PI);
+    box.rotation.z = _.random(TWO_PI);
 
-    object.scale.x = Math.random() + BOX_SCALE_VARIANCE;
-    object.scale.y = Math.random() + BOX_SCALE_VARIANCE;
-    object.scale.z = Math.random() + BOX_SCALE_VARIANCE;
+    // box.scale.x = Math.random() + BOX_SCALE_VARIANCE;
+    // box.scale.y = Math.random() + BOX_SCALE_VARIANCE;
+    // box.scale.z = Math.random() + BOX_SCALE_VARIANCE;
 
-    scene.add(object);
+    scene.add(box);
     window.s = scene;
 
   }

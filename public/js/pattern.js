@@ -1,43 +1,58 @@
-const Cell = require('./cell.js');
-const Fade = require('./fade.js');
-const Color = require('./color.js');
-const RGBAColor = require('./rgba_color.js');
-const _ = require('./lodash.js');
+import Cell from './cell';
+import Fade from './fade';
+import Color from './color';
 
-// cell width, in pixels
-const CELL_WIDTH = {
-  min: 20,
-  max: 100
-};
+function factors(n) {
+  const factors = [];
 
-class Board {
-  constructor(canvas) {
+  for (let i = 1; i <= n; i++) {
+    if (n % i === 0) factors.push(i);
+  }
+
+  return factors;
+}
+
+class Pattern {
+  constructor(width, height) {
+    const canvas = document.createElement('canvas');
+    document.body.appendChild(canvas);
     this.setCanvas(canvas);
-    this.cells  = [];
+    this.width = width;
+    this.height = height;
 
-    this.cells.flatten = () => {
-      return this.cells.reduce((array, row) => {
-        return array.concat(row);
-      });
-    }
-
-    this.cellWidth = _.random(CELL_WIDTH.min, CELL_WIDTH.max);
-    this.cellHeight = this.cellWidth;
+    this.cellHeight = this.cellWidth = _.shuffle(factors(this.width))[0];
 
     this.hueRanges = Color.generateRandomRanges();
 
-    for (let row = 0; row * this.cellHeight < this.canvas.height; row++) {
+    this.cells = [];
+    for (let row = 0; row * this.cellHeight < this.height; row++) {
       this.cells[row] = [];
 
-      for (let col = 0; col * this.cellWidth < this.canvas.width; col++) {
+      for (let col = 0; col * this.cellWidth < this.width; col++) {
         this.cells[row][col] = new Cell(new Fade(this.hueRanges));
       }
     }
+
+    this.render();
+  }
+
+  render() {
+    this.cells.forEach((row, rowIdx) => {
+      row.forEach((cell, colIdx) => {
+        this.ctx.fillStyle = cell.color.toCssString();
+        this.ctx.fillRect(
+          colIdx * this.cellWidth,
+          rowIdx * this.cellHeight,
+          this.cellWidth,
+          this.cellHeight
+        );
+      });
+    });
   }
 
   get colors() {
-    // return array of all colors in board
-    return this.cells.flatten().map((cell) => cell.color );
+    // return array of all colors in pattern
+    return _.flatten(this.cells).map((cell) => cell.color );
   }
 
   getLightestColor() {
@@ -92,9 +107,8 @@ class Board {
         cell.tick();
       });
     });
+    this.render();
   }
 }
 
-module.exports = Board;
-
-Math.random();
+export default Pattern;

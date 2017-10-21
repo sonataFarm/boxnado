@@ -1,6 +1,7 @@
-const FADE_RATE_MULTIPLIER = 0.5;
+import Light from './light';
+import Color from './color';
 
-Light = require('./light.js');
+const FADE_RATE_MULTIPLIER = 0.5;
 
 class Fade extends Light {
   constructor(hueRanges) {
@@ -21,7 +22,6 @@ class Fade extends Light {
 
   fade() {
     for (let hue in this.fadeParams) {
-
       this.fadeHue(hue);
 
       const hueLevel = this.color[hue];
@@ -94,4 +94,4 @@ class Fade extends Light {
   }
 }
 
-module.exports = Fade;
+export default Fade;

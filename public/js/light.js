@@ -1,4 +1,4 @@
-Color = require('./color.js');
+import Color from './color'
 
 class Light {
   constructor(colorProfile) {
@@ -13,4 +13,4 @@ class Light {
   }
 }
 
-module.exports = Light;
+export default Light;

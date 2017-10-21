@@ -1,22 +1,22 @@
 class CanvasRender {
-  constructor(boards) {
-    this.boards = boards;
+  constructor(patterns) {
+    this.patterns = patterns;
   }
 
   tick() {
-    this.boards.forEach(board => this.renderBoard(board));
+    this.patterns.forEach(pattern => this.renderPattern(pattern));
   }
 
-  renderBoard(board) {
-    // this.resizeCanvasToWindow(board);
-    board.cells.forEach((row, rowIdx) => {
+  renderPattern(pattern) {
+    // this.resizeCanvasToWindow(pattern);
+    pattern.cells.forEach((row, rowIdx) => {
       row.forEach((cell, colIdx) => {
-          board.ctx.fillStyle = cell.color.toCssString();
-          board.ctx.fillRect(
-            colIdx * board.cellWidth,
-            rowIdx * board.cellHeight,
-            board.cellWidth,
-            board.cellHeight
+          pattern.ctx.fillStyle = cell.color.toCssString();
+          pattern.ctx.fillRect(
+            colIdx * pattern.cellWidth,
+            rowIdx * pattern.cellHeight,
+            pattern.cellWidth,
+            pattern.cellHeight
           );
       });
     });

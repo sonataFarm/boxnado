@@ -115,4 +115,4 @@ class Color {
   }
 }
 
-module.exports = Color;
+export default Color;
