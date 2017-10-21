@@ -43,7 +43,7 @@ function init() {
   light.position.set(0, 1, 0).normalize();
   scene.add(light);
 
-  const geometry = new THREE.BoxBufferGeometry(20, 20, 20);
+  const geometry = new THREE.BoxGeometry(20, 20, 20);
 
   for (var i = 0; i < NUM_BOXES; i++) {
     let object = new THREE.Mesh(geometry, new THREE.MeshLambertMaterial({ color: Math.random() * 0xffffff }) );
@@ -93,7 +93,6 @@ function animate() {
 function render() {
   theta += THETA_ADVANCE;
   theta %= 360;
-  radians =
 
   // update camera position
   camera.position.x = CAMERA_RADIUS * Math.sin(THREE.Math.degToRad(theta));
