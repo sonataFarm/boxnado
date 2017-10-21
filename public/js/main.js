@@ -1,3 +1,4 @@
+import CanvasRender from './canvas-render';
 
 const CAMERA_RADIUS = 100; // radius of camera from center scene
 const FOV = 70;
