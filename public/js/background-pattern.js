@@ -1,21 +1,22 @@
 import Pattern, { factors } from './pattern';
 
-const ANIMATION_RATE = 10; // frame rate in milliseconds
+const ANIMATION_RATE = 1; // frame rate in milliseconds
 
 class BackgroundPattern extends Pattern {
   constructor(hueRanges) {
     const [width, height] = [window.innerWidth, window.innerHeight];
 
-    const rows = _.sample(factors(width).slice(0, 20));
-    const cellWidth = width / rows;
-    const cols = factors(height).map(
-      factor => ({ cols: factor, difference: Math.abs((height / factor) - cellWidth) })
-    ).sort(
-      (a, b) => a.difference - b.difference
-    )[0].cols; // obtain cols which divides height evenly
-               // and results in "squarest" possible cells, given cell width
+    const cols = _.random(1, 100);
+    const cellWidth = width / cols;
+    const rows = Math.ceil(height / cellWidth);
+    const cellHeight = height / rows;
+
     super(width, height, rows, cols, hueRanges);
     $(this.canvas).attr('id', 'background-pattern');
+    $(this.canvas).attr('width', `${width}px`);
+    $(this.canvas).attr('height', `${height}px`);
+
+    document.body.appendChild(this.canvas);
 
     this.animate();
   }

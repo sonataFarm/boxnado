@@ -1,7 +1,7 @@
 import Light from './light';
 import Color from './color';
 
-const FADE_RATE_MULTIPLIER = 0.5;
+const FADE_RATE_MULTIPLIER = 0.80;
 
 class Fade extends Light {
   constructor(hueRanges) {

@@ -16,13 +16,12 @@ class Pattern {
     this.width = width;
     this.height = height;
 
-    this.cellWidth = width / rows;
-    this.cellHeight = height / cols;
-
+    this.cellWidth = Math.ceil(width / cols);
+    this.cellHeight = Math.ceil(height / rows);
+    console.log(this.cellWidth, this.cellHeight);
     this.hueRanges = hueRanges;
 
     const canvas = document.createElement('canvas');
-    document.body.appendChild(canvas);
     this.setCanvas(canvas);
 
     this.initializeCells();

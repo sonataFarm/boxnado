@@ -10,16 +10,20 @@ const BACKGROUND_CLR = 0xff0000;
 const LIGHT_CLR = 0xffffff;
 const LIGHT_INTENSITY = 1;
 
-const NUM_BOXES = 10;
+const NUM_BOXES = 1000;
 const BOX_FIELD_RADIUS = 400;
 const BOX_SCALE_VARIANCE = 0.5;
 
 const TWO_PI = 2 * Math.PI;
 const THETA_ADVANCE = 0.1;
+const BACKGROUND_ANIMATION_DURATION = 2000;
+const FADE_DURATION = 750;
 
 const mouse = new THREE.Vector2();
 
 let camera, raycaster, renderer, scene, background;
+const boxes = [];
+let animating = false;
 let intersected = null;
 
 let theta = 0;
@@ -64,6 +68,8 @@ function init() {
     // box.scale.z = Math.random() + BOX_SCALE_VARIANCE;
 
     scene.add(box);
+    boxes.push(box);
+
     window.s = scene;
 
   }
@@ -78,6 +84,7 @@ function init() {
   container.appendChild(renderer.domElement);
 
   window.addEventListener('resize', onWindowResize);
+  window.addEventListener('mousedown', onMouseDown);
   document.addEventListener('mousemove', onDocumentMouseMove);
 }
 
@@ -88,54 +95,78 @@ function onWindowResize() {
   renderer.setSize(window.innerWidth, window.innerHeight);
 }
 
+function onMouseDown(event) {
+  event.preventDefault();
+  if (!intersected) return;
+
+  intersected.unhighlight();
+  startBackgroundAnimation();
+}
+
+function startBackgroundAnimation() {
+  if (background) background.clear();
+
+  animating = true;
+  fadeOutNonIntersectedBoxes();
+  intersected.animateTexture(BACKGROUND_ANIMATION_DURATION);
+  background = new BackgroundPattern(intersected.pattern.hueRanges);
+  setTimeout(endBackgroundAnimation, BACKGROUND_ANIMATION_DURATION);
+}
+
+function endBackgroundAnimation() {
+  background.clear();
+  animating = false;
+  fadeInBoxes();
+}
+
+function fadeOutNonIntersectedBoxes() {
+  boxes.filter(
+    box => box !== intersected
+  ).forEach(
+    box => box.fadeToOpacity(0, FADE_DURATION)
+  );
+}
+
+function fadeInBoxes() {
+  boxes.forEach(
+    box => box.fadeToOpacity(0.99, FADE_DURATION)
+  );
+}
+
 function animate() {
   requestAnimationFrame(animate);
   render();
 }
 
 function render() {
-  theta += THETA_ADVANCE;
-  theta %= 360;
 
-  // update camera position
-  camera.position.x = CAMERA_RADIUS * Math.sin(THREE.Math.degToRad(theta));
-  // camera.position.y = CAMERA_RADIUS * Math.cos(THREE.Math.degToRad(theta));
-  camera.position.z = CAMERA_RADIUS * Math.cos(THREE.Math.degToRad(theta));
-  camera.lookAt(scene.position);
-  camera.updateMatrixWorld();
+  if (!animating) {
+    theta = theta + THETA_ADVANCE % 360;
+    // update camera position
+    camera.position.x = CAMERA_RADIUS * Math.sin(THREE.Math.degToRad(theta));
+    camera.position.y = CAMERA_RADIUS * Math.sin(THREE.Math.degToRad(theta));
+    camera.position.z = CAMERA_RADIUS * Math.cos(THREE.Math.degToRad(theta));
+    camera.lookAt(scene.position);
+    camera.updateMatrixWorld();
+  }
 
   // find and handle mouse intersections
   raycaster.setFromCamera(mouse, camera);
   const intersects = raycaster.intersectObjects(scene.children);
 
   if (intersects.length > 0 && intersected !== intersects[0].object) {
-    if (intersected) background.clear();
+    if (intersected) {
+      intersected.unhighlight();
+    }
 
     intersected = intersects[0].object;
-    background = new BackgroundPattern(intersected.pattern.hueRanges);
+    intersected.highlight();
 
   } else if (intersects.length === 0 && intersected) {
+    intersected.unhighlight();
     intersected = null;
-    background.clear();
   }
 
-//
-//   if (intersects.length > 0) {
-//     if (intersected !== intersects[0].object) {
-//       if (intersected) intersected.material.emissive.setHex(intersected.currentHex);
-//
-//       intersected = intersects[0].object;
-//       intersected.currentHex = intersected.material.emissive.getHex();
-//
-//       scene.background = intersected.material.color;
-//       intersected.material.emissive.setHex(0x999999);
-//     }
-//   } else if (intersected) {
-//     intersected.material.emissive.setHex(intersected.currentHex);
-//     scene.background = new THREE.Color(BACKGROUND_CLR);
-//     intersected = null;
-//   }
-//
   renderer.render(scene, camera);
 }
 
