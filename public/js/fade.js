@@ -9,7 +9,6 @@ class Fade extends Light {
     this.hueRanges = hueRanges;
     this.color = Color.random(hueRanges);
     this.fadeParams = this.initializeFadeParams();
-    this.fade();
   }
 
   // public API
@@ -23,10 +22,8 @@ class Fade extends Light {
   fade() {
     for (let hue in this.fadeParams) {
       this.fadeHue(hue);
-
       const hueLevel = this.color[hue];
       const hueRange = this.hueRanges[hue];
-
       if (hueLevel > hueRange.hi) {
         this.color[hue] = hueRange.hi;
         this.fadeParams[hue].direction = 'down';

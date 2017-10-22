@@ -1,5 +1,4 @@
-import CanvasRender from './canvas-render';
-import Pattern from './pattern';
+import BackgroundPattern from './background-pattern';
 import Box from './box';
 
 const CAMERA_RADIUS = 100; // radius of camera from center scene
@@ -7,11 +6,11 @@ const FOV = 70;
 const CAMERA_NEAR = 1;
 const CAMERA_FAR = 10000;
 
-const BACKGROUND_CLR = 0x000000;
+const BACKGROUND_CLR = 0xff0000;
 const LIGHT_CLR = 0xffffff;
 const LIGHT_INTENSITY = 1;
 
-const NUM_BOXES = 500;
+const NUM_BOXES = 10;
 const BOX_FIELD_RADIUS = 400;
 const BOX_SCALE_VARIANCE = 0.5;
 
@@ -20,7 +19,7 @@ const THETA_ADVANCE = 0.1;
 
 const mouse = new THREE.Vector2();
 
-let camera, raycaster, renderer, scene;
+let camera, raycaster, renderer, scene, background;
 let intersected = null;
 
 let theta = 0;
@@ -39,8 +38,6 @@ function init() {
   camera.position.y = CAMERA_RADIUS;
 
   scene = new THREE.Scene();
-  scene.background = new THREE.Color(BACKGROUND_CLR);
-
   // add light source
   const light = new THREE.DirectionalLight(LIGHT_CLR, LIGHT_INTENSITY);
   light.position.set(0, 1, 0).normalize();
@@ -73,7 +70,9 @@ function init() {
 
   raycaster = new THREE.Raycaster();
 
-  renderer = new THREE.WebGLRenderer();
+  renderer = new THREE.WebGLRenderer({ alpha: true });
+  renderer.setClearColor(BACKGROUND_CLR, 0);
+
   renderer.setPixelRatio(window.devicePixelRatio);
   renderer.setSize(window.innerWidth, window.innerHeight);
   container.appendChild(renderer.domElement);
@@ -104,29 +103,39 @@ function render() {
   camera.position.z = CAMERA_RADIUS * Math.cos(THREE.Math.degToRad(theta));
   camera.lookAt(scene.position);
   camera.updateMatrixWorld();
-  console.log(camera.position);
 
   // find and handle mouse intersections
   raycaster.setFromCamera(mouse, camera);
   const intersects = raycaster.intersectObjects(scene.children);
-  console.log(mouse);
 
-  if (intersects.length > 0) {
-    if (intersected !== intersects[0].object) {
-      if (intersected) intersected.material.emissive.setHex(intersected.currentHex);
+  if (intersects.length > 0 && intersected !== intersects[0].object) {
+    if (intersected) background.clear();
 
-      intersected = intersects[0].object;
-      intersected.currentHex = intersected.material.emissive.getHex();
+    intersected = intersects[0].object;
+    background = new BackgroundPattern(intersected.pattern.hueRanges);
 
-      scene.background = intersected.material.color;
-      intersected.material.emissive.setHex(0x999999);
-    }
-  } else if (intersected) {
-    intersected.material.emissive.setHex(intersected.currentHex);
-    scene.background = new THREE.Color(BACKGROUND_CLR);
+  } else if (intersects.length === 0 && intersected) {
     intersected = null;
+    background.clear();
   }
 
+//
+//   if (intersects.length > 0) {
+//     if (intersected !== intersects[0].object) {
+//       if (intersected) intersected.material.emissive.setHex(intersected.currentHex);
+//
+//       intersected = intersects[0].object;
+//       intersected.currentHex = intersected.material.emissive.getHex();
+//
+//       scene.background = intersected.material.color;
+//       intersected.material.emissive.setHex(0x999999);
+//     }
+//   } else if (intersected) {
+//     intersected.material.emissive.setHex(intersected.currentHex);
+//     scene.background = new THREE.Color(BACKGROUND_CLR);
+//     intersected = null;
+//   }
+//
   renderer.render(scene, camera);
 }
 

@@ -1,11 +1,10 @@
-import Cell from './cell';
 import Fade from './fade';
 import Color from './color';
 
-function factors(n) {
+export function factors(n) {
   const factors = [];
 
-  for (let i = 1; i <= n; i++) {
+    for (let i = 1; i <= n; i++) {
     if (n % i === 0) factors.push(i);
   }
 
@@ -13,27 +12,31 @@ function factors(n) {
 }
 
 class Pattern {
-  constructor(width, height) {
-    const canvas = document.createElement('canvas');
-    document.body.appendChild(canvas);
-    this.setCanvas(canvas);
+  constructor(width, height, rows, cols, hueRanges) {
     this.width = width;
     this.height = height;
 
-    this.cellHeight = this.cellWidth = _.shuffle(factors(this.width))[0];
+    this.cellWidth = width / rows;
+    this.cellHeight = height / cols;
 
-    this.hueRanges = Color.generateRandomRanges();
+    this.hueRanges = hueRanges;
 
+    const canvas = document.createElement('canvas');
+    document.body.appendChild(canvas);
+    this.setCanvas(canvas);
+
+    this.initializeCells();
+  }
+
+  initializeCells() {
     this.cells = [];
     for (let row = 0; row * this.cellHeight < this.height; row++) {
       this.cells[row] = [];
 
       for (let col = 0; col * this.cellWidth < this.width; col++) {
-        this.cells[row][col] = new Cell(new Fade(this.hueRanges));
+        this.cells[row][col] = new Fade(this.hueRanges);
       }
     }
-
-    this.render();
   }
 
   render() {
@@ -78,7 +81,6 @@ class Pattern {
   setCanvas(canvas) {
     this.canvas = canvas;
     this.ctx = canvas.getContext('2d');
-    this.clear();
   }
 
   clear() {
@@ -102,11 +104,12 @@ class Pattern {
   }
 
   tick() {
-    this.cells.forEach((row) => {
-      row.forEach((cell) => {
+    this.cells.forEach(row => {
+      row.forEach(cell => {
         cell.tick();
       });
     });
+
     this.render();
   }
 }
