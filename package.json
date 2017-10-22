@@ -4,9 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "build": "webpack -p --config ./webpack.prod.config.js --progress",
     "test": "echo \"Error: no test specified\" && exit 1",
     "webpack": "webpack -w",
-    "heroku-postbuild": "webpack -p --config ./webpack.prod.config.js --progress"
+    "postinstall": "build"
   },
   "keywords": [],
   "author": "",
@@ -21,7 +22,6 @@
     "webpack": "^3.8.1"
   },
   "engines": {
-    "node": "6.10.1",
     "npm": "3.10.10"
   }
 }
