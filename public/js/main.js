@@ -10,7 +10,7 @@ const BACKGROUND_CLR = 0xff0000;
 const LIGHT_CLR = 0xffffff;
 const LIGHT_INTENSITY = 1;
 
-const NUM_BOXES = 1000;
+const NUM_BOXES = 750;
 const BOX_FIELD_RADIUS = 400;
 const BOX_SCALE_VARIANCE = 0.5;
 
@@ -18,10 +18,11 @@ const TWO_PI = 2 * Math.PI;
 const THETA_ADVANCE = 0.1;
 const BACKGROUND_ANIMATION_DURATION = 2000;
 const FADE_DURATION = 750;
+const DOVETAIL = 1500;
 
 const mouse = new THREE.Vector2();
 
-let camera, raycaster, renderer, scene, background;
+let camera, raycaster, renderer, scene, background, selected, prevSelected;
 const boxes = [];
 let animating = false;
 let intersected = null;
@@ -100,36 +101,47 @@ function onMouseDown(event) {
   if (!intersected) return;
 
   intersected.unhighlight();
-  startBackgroundAnimation();
+  commenceSelectSequence();
 }
 
-function startBackgroundAnimation() {
+function commenceSelectSequence() {
   if (background) background.clear();
 
   animating = true;
-  fadeOutNonIntersectedBoxes();
-  intersected.animateTexture(BACKGROUND_ANIMATION_DURATION);
-  background = new BackgroundPattern(intersected.pattern.hueRanges);
-  setTimeout(endBackgroundAnimation, BACKGROUND_ANIMATION_DURATION);
+  selected = intersected;
+  intersected = null;
+  fadeBoxesOut();
+  selected.animate();
+  background = new BackgroundPattern(selected.pattern.hueRanges);
+
+  setTimeout(endSelectSequence, BACKGROUND_ANIMATION_DURATION);
 }
 
-function endBackgroundAnimation() {
+function endSelectSequence() {
   background.clear();
+  fadeBoxesIn();
+
+  prevSelected = selected;
+  selected = null;
+
+  setTimeout(() => {
+    prevSelected.stopAnimation();
+  }, DOVETAIL);
+
   animating = false;
-  fadeInBoxes();
 }
 
-function fadeOutNonIntersectedBoxes() {
+function fadeBoxesOut() {
   boxes.filter(
-    box => box !== intersected
+    box => box !== selected
   ).forEach(
     box => box.fadeToOpacity(0, FADE_DURATION)
   );
 }
 
-function fadeInBoxes() {
+function fadeBoxesIn() {
   boxes.forEach(
-    box => box.fadeToOpacity(0.99, FADE_DURATION)
+    box => box.fadeToOpacity(1, FADE_DURATION)
   );
 }
 
@@ -144,27 +156,34 @@ function render() {
     theta = theta + THETA_ADVANCE % 360;
     // update camera position
     camera.position.x = CAMERA_RADIUS * Math.sin(THREE.Math.degToRad(theta));
-    camera.position.y = CAMERA_RADIUS * Math.sin(THREE.Math.degToRad(theta));
+    camera.position.y = (CAMERA_RADIUS * Math.sin(THREE.Math.degToRad(theta)) + CAMERA_RADIUS) * 0.5;
     camera.position.z = CAMERA_RADIUS * Math.cos(THREE.Math.degToRad(theta));
     camera.lookAt(scene.position);
     camera.updateMatrixWorld();
-  }
 
-  // find and handle mouse intersections
-  raycaster.setFromCamera(mouse, camera);
-  const intersects = raycaster.intersectObjects(scene.children);
 
-  if (intersects.length > 0 && intersected !== intersects[0].object) {
-    if (intersected) {
+    // find and handle mouse intersections
+    raycaster.setFromCamera(mouse, camera);
+    const intersects = raycaster.intersectObjects(scene.children);
+
+    if (intersects.length > 0 &&
+        intersects[0].object !== intersected &&
+        intersects[0].object !== prevSelected
+    ) {
+      if (intersected) {
+        intersected.unhighlight();
+        intersected.stopAnimation();
+      }
+
+      intersected = intersects[0].object;
+      intersected.highlight(0x666666);
+      intersected.animate();
+
+    } else if (intersects.length === 0 && intersected) {
       intersected.unhighlight();
+      intersected.stopAnimation();
+      intersected = null;
     }
-
-    intersected = intersects[0].object;
-    intersected.highlight();
-
-  } else if (intersects.length === 0 && intersected) {
-    intersected.unhighlight();
-    intersected = null;
   }
 
   renderer.render(scene, camera);

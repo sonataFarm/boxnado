@@ -19,32 +19,43 @@ class Box extends THREE.Mesh {
     this.pattern = pattern;
     this.texture = texture;
     this.material = material;
+    this.emissive = this.material.emissive;
   }
 
-  animateTexture(duration = null, interval = 1) {
-    const handler = setInterval(
+  animate(duration = null, interval = 1) {
+    if (this.animationHandler) {
+      this.stopAnimation();
+    }
+
+    this.animationHandler = setInterval(
       () => {
         this.pattern.tick();
         this.texture.needsUpdate = true;
       }, interval
     );
+    console.log('set handler no.', this.animationHandler )
 
     if (duration) {
-      setTimeout(() => clearInterval(handler), duration);
+      setTimeout(this.stopAnimation, duration);
     }
+  }
+
+  stopAnimation() {
+    clearInterval(this.animationHandler);
+    console.log('cleared handler no.', this.animationHandler);
+    this.animationHandler = null;
   }
 
   setOpacity(opacity) {
     this.material.opacity = opacity;
   }
 
-  highlight() {
-    this.currentHex = this.material.emissive.getHex();
-    this.material.emissive.setHex(0x999999);
+  highlight(color) {
+    this.material.emissive.setHex(color);
   }
 
   unhighlight() {
-    this.material.emissive.setHex(this.currentHex);
+    this.material.emissive.setHex(this.emissive);
   }
 
   fadeToOpacity(targetOpacity, duration) {
