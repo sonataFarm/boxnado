@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "webpack:deploy": "webpack --config=webpack/webpack.config.js -p",
+    "webpack:deploy": "webpack -p",
     "heroku-postbuild": "npm run webpack:deploy",
     "webpack": "webpack -w"
   },
