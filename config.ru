@@ -1,16 +1,18 @@
 use Rack::Static,
-  urls: [{"/" => "index.html"}, "/images", "/js", "/css", "/vendor"],
+  urls: {"/" => "index.html"},
   root: "public"
 
-run lambda { |env|
-  [
-    200,
-    {
-      'Content-Type'  => 'text/html',
-      'Cache-Control' => 'public, max-age=86400'
-    },
-    File.open('public/index.html', File::RDONLY)
-  ]
-}
+# run lambda { |env|
+#   [
+#     200,
+#     {
+#       'Content-Type'  => 'text/html',
+#       'Cache-Control' => 'public, max-age=86400'
+#     },
+#     File.open('public/index.html', File::RDONLY)
+#   ]
+# }
 
-run Rack::File.new('public')
+run Rack::URLMap.new({
+  "/" => Rack::Directory.new('public')
+})
