@@ -7,13 +7,14 @@ const MAX_COLS = 100;
 
 class BackgroundFadePattern extends FadePattern {
   constructor(options) {
+    const {
+      width,
+      height,
+      rows,
+      cols
+    } = BackgroundPattern.generateProperties(MIN_COLS, MAX_COLS);
+
     const { hueRanges } = options;
-
-    const [width, height] = [window.innerWidth, window.innerHeight];
-
-    const cols = _.random(MIN_COLS, MAX_COLS);
-    const cellWidth = width / cols;
-    const rows = Math.ceil(height / cellWidth);
 
     super({ width, height, rows, cols, hueRanges });
 
