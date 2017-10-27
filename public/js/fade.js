@@ -4,21 +4,24 @@ import Color from './color';
 const FADE_RATE_MULTIPLIER = 0.80;
 
 class Fade extends Light {
-  constructor(hueRanges) {
+  constructor(options) {
+    // hueRanges is:
+    // { red: { lo, hi}, green: { lo, hi }, blue: { lo, hi } }
     super();
+
+    const { hueRanges } = options;
+
     this.hueRanges = hueRanges;
     this.color = Color.random(hueRanges);
     this.fadeParams = this.initializeFadeParams();
   }
 
-  // public API
-
+  // public
   tick() {
     this.fade();
   }
 
   // private
-
   fade() {
     for (let hue in this.fadeParams) {
       this.fadeHue(hue);

@@ -1,4 +1,3 @@
-import Fade from './fade';
 import Color from './color';
 
 export function factors(n) {
@@ -12,28 +11,26 @@ export function factors(n) {
 }
 
 class Pattern {
-  constructor(width, height, rows, cols, hueRanges) {
+  constructor(options) {
+    const { width, height, rows, cols } = options;
+
     this.width = width;
     this.height = height;
 
     this.cellWidth = Math.ceil(width / cols);
     this.cellHeight = Math.ceil(height / rows);
-    console.log(this.cellWidth, this.cellHeight);
-    this.hueRanges = hueRanges;
 
     const canvas = document.createElement('canvas');
     this.setCanvas(canvas);
-
-    this.initializeCells();
   }
 
-  initializeCells() {
+  initializeCells(cellClass, options) {
     this.cells = [];
     for (let row = 0; row * this.cellHeight < this.height; row++) {
       this.cells[row] = [];
 
       for (let col = 0; col * this.cellWidth < this.width; col++) {
-        this.cells[row][col] = new Fade(this.hueRanges);
+        this.cells[row][col] = new cellClass(options);
       }
     }
   }

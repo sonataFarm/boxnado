@@ -31,7 +31,7 @@ class Color {
     return new Color(...rgb);
   }
 
-  static generateRandomRanges() {
+  static generateRandomHueRanges() {
     return ['red', 'green', 'blue'].reduce(
       (distributions, hue) => {
         const [lo, hi] = [

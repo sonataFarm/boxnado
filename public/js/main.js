@@ -1,4 +1,4 @@
-import BackgroundPattern from './background-pattern';
+import BackgroundFadePattern from './background-fade-pattern';
 import Box from './box';
 
 const CAMERA_RADIUS = 100; // radius of camera from center scene
@@ -13,6 +13,7 @@ const LIGHT_INTENSITY = 1;
 const NUM_BOXES = 750;
 const BOX_FIELD_RADIUS = 400;
 const BOX_SCALE_VARIANCE = 0.5;
+const HIGHLIGHT_CLR = 0x222222;
 
 const TWO_PI = 2 * Math.PI;
 const THETA_ADVANCE = 0.1;
@@ -20,14 +21,15 @@ const BACKGROUND_ANIMATION_DURATION = 2000;
 const FADE_DURATION = 750;
 const DOVETAIL = 1500;
 
+
 const mouse = new THREE.Vector2();
 
 let camera, raycaster, renderer, scene, background, selected, prevSelected;
 const boxes = [];
 let animating = false;
 let intersected = null;
-
 let theta = 0;
+
 init();
 animate();
 
@@ -43,6 +45,11 @@ function init() {
   camera.position.y = CAMERA_RADIUS;
 
   scene = new THREE.Scene();
+
+  // !!! testing and debugging
+  window.s = scene;
+  // !!! end
+
   // add light source
   const light = new THREE.DirectionalLight(LIGHT_CLR, LIGHT_INTENSITY);
   light.position.set(0, 1, 0).normalize();
@@ -50,29 +57,20 @@ function init() {
 
   const geometry = new THREE.BoxGeometry(20, 20, 20);
 
+  // generate boxes
   for (var i = 0; i < NUM_BOXES; i++) {
     let box = new Box();
-    // let object = new THREE.Mesh(geometry, new THREE.MeshLambertMaterial({ color: Math.random() * 0xffffff }) );
 
-    // assign random position
     box.position.x = _.random(-BOX_FIELD_RADIUS, BOX_FIELD_RADIUS);
     box.position.y = _.random(-BOX_FIELD_RADIUS, BOX_FIELD_RADIUS);
     box.position.z = _.random(-BOX_FIELD_RADIUS, BOX_FIELD_RADIUS);
 
-    // assign random rotation
     box.rotation.x = _.random(TWO_PI);
     box.rotation.y = _.random(TWO_PI);
     box.rotation.z = _.random(TWO_PI);
 
-    // box.scale.x = Math.random() + BOX_SCALE_VARIANCE;
-    // box.scale.y = Math.random() + BOX_SCALE_VARIANCE;
-    // box.scale.z = Math.random() + BOX_SCALE_VARIANCE;
-
     scene.add(box);
     boxes.push(box);
-
-    window.s = scene;
-
   }
 
   raycaster = new THREE.Raycaster();
@@ -86,7 +84,7 @@ function init() {
 
   window.addEventListener('resize', onWindowResize);
   window.addEventListener('mousedown', onMouseDown);
-  document.addEventListener('mousemove', onDocumentMouseMove);
+  document.addEventListener('mousemove', onMouseMove);
 }
 
 function onWindowResize() {
@@ -110,9 +108,11 @@ function commenceSelectSequence() {
   animating = true;
   selected = intersected;
   intersected = null;
+
   fadeBoxesOut();
   selected.animate();
-  background = new BackgroundPattern(selected.pattern.hueRanges);
+  const { hueRanges } = selected.pattern;
+  background = new BackgroundFadePattern({ hueRanges });
 
   setTimeout(endSelectSequence, BACKGROUND_ANIMATION_DURATION);
 }
@@ -161,8 +161,7 @@ function render() {
     camera.lookAt(scene.position);
     camera.updateMatrixWorld();
 
-
-    // find and handle mouse intersections
+    // handle mouse intersections
     raycaster.setFromCamera(mouse, camera);
     const intersects = raycaster.intersectObjects(scene.children);
 
@@ -176,7 +175,7 @@ function render() {
       }
 
       intersected = intersects[0].object;
-      intersected.highlight(0x666666);
+      intersected.highlight(HIGHLIGHT_CLR);
       intersected.animate();
 
     } else if (intersects.length === 0 && intersected) {
@@ -189,7 +188,7 @@ function render() {
   renderer.render(scene, camera);
 }
 
-function onDocumentMouseMove(event) {
+function onMouseMove(event) {
   event.preventDefault();
 
   mouse.x = (event.clientX / window.innerWidth) * 2 - 1;

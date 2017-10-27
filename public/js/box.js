@@ -1,4 +1,4 @@
-import TexturePattern from './texture-pattern';
+import FadePattern from './fade-pattern';
 
 const WIDTH = 20;
 const HEIGHT = 20;
@@ -8,12 +8,11 @@ const FADE_RATE = 50;
 class Box extends THREE.Mesh {
   constructor() {
     const geometry = new THREE.BoxGeometry(WIDTH, HEIGHT, DEPTH);
-    const pattern = new TexturePattern(WIDTH * 15, HEIGHT * 15);
+    const pattern = new FadePattern({width: WIDTH * 15, height: HEIGHT * 15});
     const texture  = new THREE.Texture(pattern.canvas);
     texture.minFilter = THREE.LinearFilter;
     texture.needsUpdate = true;
     const material = new THREE.MeshLambertMaterial({ map: texture, transparent: true, opacity: 1 });
-
     super(geometry, material);
 
     this.pattern = pattern;
@@ -33,7 +32,6 @@ class Box extends THREE.Mesh {
         this.texture.needsUpdate = true;
       }, interval
     );
-    console.log('set handler no.', this.animationHandler )
 
     if (duration) {
       setTimeout(this.stopAnimation, duration);
@@ -42,7 +40,6 @@ class Box extends THREE.Mesh {
 
   stopAnimation() {
     clearInterval(this.animationHandler);
-    console.log('cleared handler no.', this.animationHandler);
     this.animationHandler = null;
   }
 
