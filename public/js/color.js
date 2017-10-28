@@ -2,7 +2,7 @@ const COLOR_MAX = 255;
 const MIN_CONTRAST = 4.5;
 
 class Color {
-  static random(hueRanges) {
+  static random(hueRanges = null) {
     let red, green, blue;
 
     if (hueRanges) {

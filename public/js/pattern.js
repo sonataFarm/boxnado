@@ -16,6 +16,8 @@ class Pattern {
 
     this.width = width;
     this.height = height;
+    this.rowCount = rows;
+    this.colCount = cols;
 
     this.cellWidth = Math.ceil(width / cols);
     this.cellHeight = Math.ceil(height / rows);
