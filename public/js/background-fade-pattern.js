@@ -1,5 +1,6 @@
 import FadePattern from './fade-pattern';
 import { factors } from './pattern';
+import BackgroundPattern from './background-pattern';
 
 const ANIMATION_RATE = 1; // frame rate in milliseconds
 const MIN_COLS = 1;
@@ -13,17 +14,10 @@ class BackgroundFadePattern extends FadePattern {
       rows,
       cols
     } = BackgroundPattern.generateProperties(MIN_COLS, MAX_COLS);
-
     const { hueRanges } = options;
 
     super({ width, height, rows, cols, hueRanges });
-
-    $(this.canvas).attr('id', 'background-pattern');
-    $(this.canvas).attr('width', `${width}px`);
-    $(this.canvas).attr('height', `${height}px`);
-
-    document.body.appendChild(this.canvas);
-
+    BackgroundPattern.configureCanvas.bind(this)(width, height);
     this.animate();
   }
 

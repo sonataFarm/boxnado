@@ -1,18 +1,15 @@
-import Light from './light';
+import Cell from './cell';
 import Color from './color';
 
 const FADE_RATE_MULTIPLIER = 0.80;
 
-class Fade extends Light {
+class Fade extends Cell {
   constructor(options) {
     // hueRanges is:
     // { red: { lo, hi}, green: { lo, hi }, blue: { lo, hi } }
-    super();
-
     const { hueRanges } = options;
-
+    super(Color.random(hueRanges));
     this.hueRanges = hueRanges;
-    this.color = Color.random(hueRanges);
     this.fadeParams = this.initializeFadeParams();
   }
 
