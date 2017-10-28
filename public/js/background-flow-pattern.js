@@ -5,7 +5,10 @@ import Cell from './cell';
 
 const MIN_COLS = 50;
 const MAX_COLS = 100;
-const ANIMATION_RATE = 1;
+const ANIMATION_RATE = 25;
+const FADE_RATE_MIN = 1;
+const FADE_RATE_MAX = 50;
+const FADE_RATE_VARIANCE = 1;
 
 class BackgroundFlowPattern extends Pattern {
   constructor(color) {
@@ -21,6 +24,13 @@ class BackgroundFlowPattern extends Pattern {
     this.initializeCells(Cell, color);
     BackgroundPattern.configureCanvas.bind(this)(width, height);
     window.p = this;
+
+    this.fadeRates = {
+      red: _.random(FADE_RATE_MIN, FADE_RATE_MAX, true),
+      green: _.random(FADE_RATE_MIN, FADE_RATE_MAX, true),
+      blue: _.random(FADE_RATE_MIN, FADE_RATE_MAX, true),
+    }
+
     this.animate();
   }
 
@@ -41,7 +51,24 @@ class BackgroundFlowPattern extends Pattern {
 
   generateNextColor() {
     // generates next color of this.cells[0][0]
-    return new Color(255, 0, 0);
+    const firstColor = this.cells[0][0].color;
+    const hues = {
+      red: firstColor.red + this.fadeRates.red,
+      green: firstColor.green + this.fadeRates.green,
+      blue: firstColor.blue + this.fadeRates.blue
+    }
+
+    for (let hue in this.fadeRates) {
+      if (this.fadeRates.hasOwnProperty(hue)) {
+        // reverse fadeRate if resulting hue exceeds value range
+        if (hues[hue] > 255 || hues[hue] < 0) {
+          this.fadeRates[hue] *= -1;
+          hues[hue] += this.fadeRates[hue] * 2;
+        }
+      }
+    }
+
+    return new Color(hues.red, hues.green, hues.blue);
   }
 
   animate() {

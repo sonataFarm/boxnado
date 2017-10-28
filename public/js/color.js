@@ -65,7 +65,6 @@ class Color {
     return new Color(red, green, blue);
   }
 
-
   constructor(red, green, blue) {
     this.red = red;
     this.green = green;
