@@ -8,7 +8,7 @@ const MAX_COLS = 100;
 const ANIMATION_RATE = 25;
 const FADE_RATE_MIN = 1;
 const FADE_RATE_MAX = 50;
-const FADE_RATE_VARIANCE = 1;
+const FADE_RATE_VARIANCE = 1; // TODO: add variance
 
 class BackgroundFlowPattern extends Pattern {
   constructor(color) {
