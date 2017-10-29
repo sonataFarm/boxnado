@@ -50,7 +50,7 @@ class BackgroundFlowPattern extends Pattern {
   }
 
   generateNextColor() {
-    // generates next color of this.cells[0][0]
+    // generate next color of this.cells[0][0]
     const firstColor = this.cells[0][0].color;
     const hues = {
       red: firstColor.red + this.fadeRates.red,
