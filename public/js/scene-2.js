@@ -1,5 +1,6 @@
 import BackgroundFadePattern from './background-fade-pattern';
 import BackgroundFlowPattern from './background-flow-pattern';
+import Color from './color';
 import Box from './box';
 
 const CAMERA_RADIUS = 100; // radius of camera from center scene
@@ -112,7 +113,7 @@ function commenceSelectSequence() {
   fadeBoxesOut();
   selected.animate();
   const { hueRanges } = selected.pattern;
-  background = new BackgroundFadePattern({ hueRanges });
+  background = new BackgroundFlowPattern(Color.random(hueRanges));
 
   setTimeout(endSelectSequence, BACKGROUND_ANIMATION_DURATION);
 }
